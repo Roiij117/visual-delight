@@ -10,8 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, FileType, CheckCircle } from "lucide-react";
+import { Upload, FileType, CheckCircle, Hash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+const generateQuoteNumber = () => {
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `RE-${timestamp}-${random}`;
+};
 
 const materials = [
   { value: "pla", label: "PLA", description: "Miljövänligt, enkelt att printa" },
@@ -36,10 +42,13 @@ export default function OrderPage() {
   const [color, setColor] = useState("");
   const [fileName, setFileName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [quoteNumber, setQuoteNumber] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFileName(e.target.files[0].name);
+      const newQuoteNumber = generateQuoteNumber();
+      setQuoteNumber(newQuoteNumber);
     }
   };
 
@@ -52,7 +61,7 @@ export default function OrderPage() {
     
     toast({
       title: "Förfrågan skickad!",
-      description: "Vi återkommer med en offert inom 24 timmar.",
+      description: `Din offertförfrågan ${quoteNumber} har mottagits. Vi återkommer inom 24 timmar.`,
     });
     
     setIsSubmitting(false);
@@ -156,6 +165,19 @@ export default function OrderPage() {
                     </div>
                   )}
                 </div>
+
+                {/* Quote Number Display */}
+                {quoteNumber && (
+                  <div className="mt-4 flex items-center gap-3 p-4 bg-primary/10 border border-primary/30 rounded-xl animate-fade-in">
+                    <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                      <Hash className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Ditt offertnummer</p>
+                      <p className="font-mono font-bold text-primary text-lg">{quoteNumber}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
